@@ -4,6 +4,11 @@ Simple Parameterized Test for RSpec.
 
 Inspired by [tomykaira/rspec-parameterized](https://github.com/tomykaira/rspec-parameterized).
 
+## Requirements
+
+- Ruby 2.6 or later
+  - This gem uses `RubyVM::AbstractSyntaxTree`
+
 ## Installation
 
 Add this line to your application's Gemfile:
