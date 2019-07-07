@@ -1,4 +1,4 @@
-# RSpec::Paramz [![Build Status](https://travis-ci.org/fukayatsu/rspec-paramz.svg?branch=master)](https://travis-ci.org/fukayatsu/rspec-paramz)
+# RSpec::Paramz [![Gem Version](https://badge.fury.io/rb/rspec-paramz.svg)](https://badge.fury.io/rb/rspec-paramz) [![Build Status](https://travis-ci.org/fukayatsu/rspec-paramz.svg?branch=master)](https://travis-ci.org/fukayatsu/rspec-paramz)
 
 Simple Parameterized Test for RSpec.
 
