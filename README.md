@@ -84,7 +84,6 @@ RSpec.describe RSpec::Paramz do
       #   should do additions
       # [a = 5 | b = -8 | subject { a + b } = -3]
       #   should do additions
-
     end
 
     context 'format 3' do
@@ -180,9 +179,29 @@ RSpec.describe RSpec::Paramz do
         #   should do additions
       end
     end
+
+    context 'nil or empty' do
+      paramz(
+        [:a,   :b,  :answer],
+        "foo", nil,   "foo",
+        "",    nil,   "",
+        nil,   "bar", nil
+      ) do
+        it 'should do additions' do
+          expect(a&.to_s).to eq answer
+        end
+      end
+
+      #=>
+      # [a = "foo" | b = nil | answer = "foo"]
+      #   should do additions
+      # [a = "" | b = nil | answer = ""]
+      #   should do additions
+      # [a = nil | b = "bar" | answer = nil]
+      #   should do additions
+    end
   end
 end
-
 ```
 
 ## Development
