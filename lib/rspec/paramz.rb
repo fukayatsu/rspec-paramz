@@ -1,5 +1,7 @@
 require "rspec/paramz/version"
 require "rspec/paramz/syntax"
+require "rspec/paramz/named_proc"
+require "rspec/paramz/pretty_print"
 
 module RSpec
   module Paramz
@@ -7,33 +9,24 @@ module RSpec
       def paramz(*args, &block)
         labels = args.first
 
-        if !block_given? && labels.all? { |label| !label.is_a?(Hash) || label.keys != [:subject] }
+        if !block_given? && !labels.any? { |label| subject_label?(label) }
           raise ArgumentError, "No block or subject given to paramz."
         end
 
         args[1..-1].each_slice(labels.length).with_index do |arg, index|
           pairs = [labels, arg].transpose.to_h
 
-          context_name = '[' + pairs.map { |k, v| "#{RSpec::Paramz.pretty_print(k)} = #{RSpec::Paramz.pretty_print(v)}" }.join(' | ') + ']'
+          context_name = '[' + pairs.map { |k, v| "#{RSpec::Paramz::PrettyPrint.inspect(k)} = #{RSpec::Paramz::PrettyPrint.inspect(v, false)}" }.join(' | ') + ']'
 
           context context_name do
-            pairs.each do |name, val|
-              if name.is_a?(Hash)
-                raise "error" if name.keys != [:subject]
-                _subject = name[:subject]
-
-                _subject_name = nil
-                if _subject.is_a?(Hash)
-                  _subject_name = _subject.keys.first
-                  _subject      = _subject.values.first
-                end
+            pairs.each do |label, val|
+              if subject_label?(label)
+                _subject, _subject_name = parse_subject(label)
 
                 module_exec { _subject.is_a?(Proc) ? subject(_subject_name, &_subject) : subject(_subject_name) { _subject }  }
-                unless block_given?
-                  it { should == val }
-                end
+                it { should == val } unless block_given?
               else
-                module_exec { val.is_a?(Proc) ? let(name, &val) : let(name) { val } }
+                module_exec { val.is_a?(Proc) ? let(label, &val) : let(label) { val } }
               end
             end
 
@@ -41,64 +34,30 @@ module RSpec
 
             after(:each) do |example|
               if example.exception
-                index_info = arg.map { |v| RSpec::Paramz.pretty_print(v) }.join(', ')
+                index_info = arg.map { |v| RSpec::Paramz::PrettyPrint.inspect(v, false) }.join(', ')
                 example.exception.backtrace.push("failed paramz index is:#{index + 1}:[#{index_info}]")
               end
             end
           end
         end
       end
-    end
 
-    # TODO: Extract to other file
-    def self.pretty_print(value)
-      case value
-      when Hash
-        pretty_subject(value)
-      when NamedProc
-        value
-      when Proc
-        proc_source(value)
-      else
-        value
+      private
+
+      def subject_label?(label)
+        label.is_a?(Hash) && label.keys == [:subject]
       end
-    end
 
-    def self.proc_source(value)
-      node = RubyVM::AbstractSyntaxTree.of(value)
-      return value if node.nil?
+      def parse_subject(label)
+        _subject = label[:subject]
 
-      path = value.source_location.first
-      lines = File.readlines(path)
-      source_lines = lines[(node.first_lineno - 1)..(node.last_lineno - 1)]
-      source_lines[-1] = source_lines[-1][0..(node.last_column - 1)]
-      source_lines[0]  = source_lines[0][node.first_column..]
-      source_lines.map(&:strip).join("\n")
-    end
-
-    def self.pretty_subject(value)
-      return value if value.keys != [:subject]
-
-      _subject = value.values.first
-      case _subject
-      when NamedProc
-        "subject #{_subject}"
-      when Proc
-        "subject #{proc_source(_subject)}"
-      when Hash
-        subject_name  = _subject.keys.first
-        subject_value = _subject.values.first
-
-        case subject_value
-        when NamedProc
-          "subject(:#{subject_name}) #{subject_value}"
-        when Proc
-          "subject(:#{subject_name}) #{proc_source(subject_value)}"
-        else
-          "subject { #{subject_value} }"
+        _subject_name = nil
+        if _subject.is_a?(Hash)
+          _subject_name = _subject.keys.first
+          _subject      = _subject.values.first
         end
-      else
-        value
+
+        [_subject, _subject_name]
       end
     end
   end
