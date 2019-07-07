@@ -11,6 +11,14 @@ RSpec.describe RSpec::Paramz do
           expect(a + b).to eq answer
         end
       end
+
+      #=>
+      # [a = 1 | b = 2 | answer = 3]
+      #   should do additions
+      # [a = 3 | b = 8 | answer = 11]
+      #   should do additions
+      # [a = 5 | b = -8 | answer = -3]
+      #   should do additions
     end
 
     context 'format 2' do
@@ -20,6 +28,14 @@ RSpec.describe RSpec::Paramz do
         3,   8,  11,
         5,   -8, -3,
       )
+
+      #=>
+      # [a = 1 | b = 2 | subject { a + b } = 3]
+      #   should == 3
+      # [a = 3 | b = 8 | subject { a + b } = 11]
+      #   should == 11
+      # [a = 5 | b = -8 | subject { a + b } = -3]
+      #   should == -3
     end
 
     context 'format 2-a' do
@@ -33,6 +49,15 @@ RSpec.describe RSpec::Paramz do
           expect(subject).to eq(a + b)
         end
       end
+
+      #=>
+      # [a = 1 | b = 2 | subject { a + b } = 3]
+      #   should do additions
+      # [a = 3 | b = 8 | subject { a + b } = 11]
+      #   should do additions
+      # [a = 5 | b = -8 | subject { a + b } = -3]
+      #   should do additions
+
     end
 
     context 'format 3' do
@@ -42,6 +67,14 @@ RSpec.describe RSpec::Paramz do
         3,   8,  11,
         5,   -8, -3,
       )
+
+      #=>
+      # [a = 1 | b = 2 | subject(:answer) { a + b } = 3]
+      #   should == 3
+      # [a = 3 | b = 8 | subject(:answer) { a + b } = 11]
+      #   should == 11
+      # [a = 5 | b = -8 | subject(:answer) { a + b } = -3]
+      #   should == -3
     end
 
     context 'format 3-b' do
@@ -59,6 +92,17 @@ RSpec.describe RSpec::Paramz do
           expect(answer).to eq(a + b)
         end
       end
+
+      #=>
+      # [a = 1 | b = 2 | subject(:answer) { a + b } = 3]
+      #   should do additions
+      #   should do additions
+      # [a = 3 | b = 8 | subject(:answer) { a + b } = 11]
+      #   should do additions
+      #   should do additions
+      # [a = 5 | b = -8 | subject(:answer) { a + b } = -3]
+      #   should do additions
+      #   should do additions
     end
 
     context 'rspec-let' do
@@ -77,6 +121,14 @@ RSpec.describe RSpec::Paramz do
             expect(a + b).to eq answer
           end
         end
+
+        #=>
+        # [a = { one } | b = 0 | answer = 1]
+        #   should do additions
+        # [a = { one } | b = { one } | answer = { 2 }]
+        #   should do additions
+        # [a = { one } | b = { two } | answer = { three }]
+        #   should do additions
       end
 
       context 'using RSpec::Paramz::Syntax' do
@@ -91,6 +143,14 @@ RSpec.describe RSpec::Paramz do
             expect(a + b).to eq answer
           end
         end
+
+        #=>
+        # [a = { one } | b = 0 | answer = 1]
+        #   should do additions
+        # [a = { one } | b = { one } | answer = { 2 }]
+        #   should do additions
+        # [a = { one } | b = { two } | answer = { three }]
+        #   should do additions
       end
     end
   end
