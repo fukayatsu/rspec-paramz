@@ -136,6 +136,25 @@ RSpec.describe RSpec::Paramz do
       #   should do additions
     end
 
+    context 'format 4' do
+      subject { a + b }
+
+      paramz(
+        [:a, :b, :subject],
+        1,   2,   3,
+        0,   0,   0,
+        -1,  -2,  -3,
+      )
+
+      #=>
+      # [a = 1 | b = 2 | subject = 3]
+      #   should == 3
+      # [a = 0 | b = 0 | subject = 0]
+      #   should == 0
+      # [a = -1 | b = -2 | subject = -3]
+      #   should == -3
+    end
+
     context 'rspec-let' do
       let(:one)   { 1 }
       let(:two)   { one * 2 }
