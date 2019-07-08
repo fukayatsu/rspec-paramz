@@ -21,6 +21,11 @@ module RSpec
           context context_name do
             pairs.each do |label, val|
               if subject_label?(label)
+                if label == :subject
+                  it { should == val }
+                  next
+                end
+
                 _subject, _subject_name = parse_subject(label)
 
                 module_exec { _subject.is_a?(Proc) ? subject(_subject_name, &_subject) : subject(_subject_name) { _subject }  }
@@ -45,6 +50,7 @@ module RSpec
       private
 
       def subject_label?(label)
+        return true if label == :subject
         label.is_a?(Hash) && label.keys == [:subject]
       end
 
