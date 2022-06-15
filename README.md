@@ -181,6 +181,41 @@ RSpec.describe RSpec::Paramz do
         #   should do additions
       end
 
+      context 'default 2' do
+        subject { a + b }
+        paramz(
+          [:a,       :b,          :subject],
+          -> { one }, 0,          1,
+          -> { one }, -> { one }, -> { 2 },
+          -> { one }, -> { two }, -> { three },
+        )
+
+        #=>
+        # [a = { one } | b = 0 | subject = 1]
+        #   should == 1
+        # [a = { one } | b = { one } | subject = { 2 }]
+        #   should == 2
+        # [a = { one } | b = { two } | subject = { three }]
+        #   should == 3
+      end
+
+      context 'default 3' do
+        paramz(
+          [:a,       :b,          subject: -> { a + b }],
+          -> { one }, 0,          1,
+          -> { one }, -> { one }, -> { 2 },
+          -> { one }, -> { two }, -> { three },
+        )
+
+        #=>
+        # [a = { one } | b = 0 | subject { a + b } = 1]
+        #   should == 1
+        # [a = { one } | b = { one } | subject { a + b } = { 2 }]
+        #   should == 2
+        # [a = { one } | b = { two } | subject { a + b } = { three }]
+        #   should == 3
+      end
+
       context 'using RSpec::Paramz::Syntax' do
         using RSpec::Paramz::Syntax
         paramz(
