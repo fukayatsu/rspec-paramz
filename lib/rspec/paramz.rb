@@ -22,14 +22,19 @@ module RSpec
             pairs.each do |label, val|
               if subject_label?(label)
                 if label == :subject
-                  it { should == val }
+                  module_exec { val.is_a?(Proc) ? let(:_paramz_subject, &val) : let(:_paramz_subject) { val } }
+                  it { should == _paramz_subject }
                   next
                 end
 
                 _subject, _subject_name = parse_subject(label)
 
                 module_exec { _subject.is_a?(Proc) ? subject(_subject_name, &_subject) : subject(_subject_name) { _subject }  }
-                it { should == val } unless block_given?
+
+                unless block_given?
+                  module_exec { val.is_a?(Proc) ? let(:_paramz_subject, &val) : let(:_paramz_subject) { val } }
+                  it { should == _paramz_subject }
+                end
               else
                 module_exec { val.is_a?(Proc) ? let(label, &val) : let(label) { val } }
               end
