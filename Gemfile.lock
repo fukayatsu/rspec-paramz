@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    rspec-paramz (1.2.0)
+    rspec-paramz (2.0.0)
       rspec
 
 GEM
