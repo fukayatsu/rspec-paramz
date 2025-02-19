@@ -4,4 +4,4 @@ inherit_gem:
     - "config/rspec.yml"
 
 AllCops:
-  TargetRubyVersion: 2.6
+  TargetRubyVersion: 3.1

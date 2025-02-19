@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     rspec-paramz (1.2.0)
-      rspec (~> 3.0)
+      rspec
 
 GEM
   remote: https://rubygems.org/
@@ -66,10 +66,10 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  bundler (~> 2.0)
+  bundler
   onkcop
   pry
-  rake (~> 13.0)
+  rake
   rspec-paramz!
 
 BUNDLED WITH

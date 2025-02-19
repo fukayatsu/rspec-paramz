@@ -1,13 +1,13 @@
 RSpec.describe RSpec::Paramz do
-  describe '#paramz' do
-    context 'format 1' do
+  describe "#paramz" do
+    context "format 1" do
       paramz(
         [:a, :b, :answer],
         1,   2,  3,
         3,   8,  11,
-        5,   -8, -3,
+        5,   -8, -3
       ) do
-        it 'should do additions' do
+        it "does additions" do
           expect(a + b).to eq answer
         end
       end
@@ -21,31 +21,14 @@ RSpec.describe RSpec::Paramz do
       #   should do additions
     end
 
-    context 'format 2' do
+    context "format 2-a" do
       paramz(
-        [:a, :b, subject: -> { a + b }],
+        [:a, :b, { subject: -> { a + b } }],
         1,   2,  3,
         3,   8,  11,
-        5,   -8, -3,
-      )
-
-      #=>
-      # [a = 1 | b = 2 | subject { a + b } = 3]
-      #   should == 3
-      # [a = 3 | b = 8 | subject { a + b } = 11]
-      #   should == 11
-      # [a = 5 | b = -8 | subject { a + b } = -3]
-      #   should == -3
-    end
-
-    context 'format 2-a' do
-      paramz(
-        [:a, :b, subject: -> { a + b }],
-        1,   2,  3,
-        3,   8,  11,
-        5,   -8, -3,
+        5,   -8, -3
       ) do
-        it 'should do additions' do
+        it "does additions" do
           expect(subject).to eq(a + b)
         end
       end
@@ -59,35 +42,18 @@ RSpec.describe RSpec::Paramz do
       #   should do additions
     end
 
-    context 'format 3' do
+    context "format 3-b" do
       paramz(
-        [:a, :b, subject: { answer: -> { a + b } }],
+        [:a, :b, { subject: { answer: -> { a + b } } }],
         1,   2,  3,
         3,   8,  11,
-        5,   -8, -3,
-      )
-
-      #=>
-      # [a = 1 | b = 2 | subject(:answer) { a + b } = 3]
-      #   should == 3
-      # [a = 3 | b = 8 | subject(:answer) { a + b } = 11]
-      #   should == 11
-      # [a = 5 | b = -8 | subject(:answer) { a + b } = -3]
-      #   should == -3
-    end
-
-    context 'format 3-b' do
-      paramz(
-        [:a, :b, subject: { answer: -> { a + b } }],
-        1,   2,  3,
-        3,   8,  11,
-        5,   -8, -3,
+        5,   -8, -3
       ) do
-        it 'should do additions' do
+        it "does additions (subject)" do
           expect(subject).to eq(a + b)
         end
 
-        it 'should do additions' do
+        it "does additions (answer)" do
           expect(answer).to eq(a + b)
         end
       end
@@ -104,38 +70,19 @@ RSpec.describe RSpec::Paramz do
       #   should do additions
     end
 
-    context 'format 4' do
-      subject { a + b }
-
-      paramz(
-        [:a, :b, :subject],
-        1,   2,   3,
-        0,   0,   0,
-        -1,  -2,  -3,
-      )
-
-      #=>
-      # [a = 1 | b = 2 | subject = 3]
-      #   should == 3
-      # [a = 0 | b = 0 | subject = 0]
-      #   should == 0
-      # [a = -1 | b = -2 | subject = -3]
-      #   should == -3
-    end
-
-    context 'rspec-let' do
+    context "rspec-let" do
       let(:one)   { 1 }
       let(:two)   { one * 2 }
       let(:three) { one * 3 }
 
-      context 'default' do
+      context "default" do
         paramz(
-          [:a,       :b,          :answer],
+          [:a, :b,          :answer],
           -> { one }, 0,          1,
           -> { one }, -> { one }, -> { 2 },
-          -> { one }, -> { two }, -> { three },
+          -> { one }, -> { two }, -> { three }
         ) do
-          it 'should do additions' do
+          it "does additions" do
             expect(a + b).to eq answer
           end
         end
@@ -149,50 +96,15 @@ RSpec.describe RSpec::Paramz do
         #   should do additions
       end
 
-      context 'default 2' do
-        subject { a + b }
-        paramz(
-          [:a,       :b,          :subject],
-          -> { one }, 0,          1,
-          -> { one }, -> { one }, -> { 2 },
-          -> { one }, -> { two }, -> { three },
-        )
-
-        #=>
-        # [a = { one } | b = 0 | subject = 1]
-        #   should == 1
-        # [a = { one } | b = { one } | subject = { 2 }]
-        #   should == 2
-        # [a = { one } | b = { two } | subject = { three }]
-        #   should == 3
-      end
-
-      context 'default 3' do
-        paramz(
-          [:a,       :b,          subject: -> { a + b }],
-          -> { one }, 0,          1,
-          -> { one }, -> { one }, -> { 2 },
-          -> { one }, -> { two }, -> { three },
-        )
-
-        #=>
-        # [a = { one } | b = 0 | subject { a + b } = 1]
-        #   should == 1
-        # [a = { one } | b = { one } | subject { a + b } = { 2 }]
-        #   should == 2
-        # [a = { one } | b = { two } | subject { a + b } = { three }]
-        #   should == 3
-      end
-
-      context 'using RSpec::Paramz::Syntax' do
+      context "using RSpec::Paramz::Syntax" do
         using RSpec::Paramz::Syntax
         paramz(
           [:a,    :b,     :answer],
           :one.&, 0,      1,
           :one.&, :one.&, -> { 2 },
-          :one.&, :two.&, :three.&,
+          :one.&, :two.&, :three.&
         ) do
-          it 'should do additions' do
+          it "does additions" do
             expect(a + b).to eq answer
           end
         end
@@ -207,14 +119,14 @@ RSpec.describe RSpec::Paramz do
       end
     end
 
-    context 'nil or empty' do
+    context "nil or empty" do
       paramz(
-        [:a,   :b,  :answer],
+        [:a,   :b, :answer],
         "foo", nil,   "foo",
         "",    nil,   "",
         nil,   "bar", nil
       ) do
-        it 'should do additions' do
+        it "does additions" do
           expect(a&.to_s).to eq answer
         end
       end

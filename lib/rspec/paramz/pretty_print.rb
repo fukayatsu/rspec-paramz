@@ -52,16 +52,10 @@ module RSpec
 
         private
 
-        def fetch_code_location(value)
-          # if RubyVM::InstructionSequence.compile("").to_a[4][:parser] == :prism
+          def fetch_code_location(value)
             iseq = RubyVM::InstructionSequence.of(value)
             iseq.to_a[4][:code_location]
-          # else
-          #   node = RubyVM::AbstractSyntaxTree.of(value)
-          #   return nil if node.nil?
-          #   [node.first_lineno, node.first_column, node.last_lineno, node.last_column]
-          # end
-        end
+          end
       end
     end
   end

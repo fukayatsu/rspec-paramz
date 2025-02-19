@@ -6,8 +6,7 @@ Inspired by [tomykaira/rspec-parameterized](https://github.com/tomykaira/rspec-p
 
 ## Requirements
 
-- Ruby 2.6 or later
-  - This gem uses `RubyVM::AbstractSyntaxTree`
+- Ruby 3.1 or later
 
 ## Installation
 
