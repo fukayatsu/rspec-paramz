@@ -37,15 +37,29 @@ module RSpec
       def self.to_source(value)
         return value if value.is_a?(NamedProc) || !value.is_a?(Proc)
 
-        node = RubyVM::AbstractSyntaxTree.of(value)
-        return value if node.nil?
+        if RubyVM::InstructionSequence.compile("").to_a[4][:parser] == :prism
+          iseq = RubyVM::InstructionSequence.of(value)
+          code_location = iseq.to_a[4][:code_location]
+          return value if code_location.nil?
 
-        path = value.source_location.first
-        lines = File.readlines(path)
-        source_lines = lines[(node.first_lineno - 1)..(node.last_lineno - 1)]
-        source_lines[-1] = source_lines[-1][0..(node.last_column - 1)]
-        source_lines[0]  = source_lines[0][node.first_column..]
-        source_lines.map(&:strip).join("\n")
+          path = value.source_location.first
+          lines = File.readlines(path)
+
+          source_lines = lines[(code_location[0] - 1)..(code_location[2] - 1)]
+          source_lines[-1] = source_lines[-1][0..(code_location[3] - 1)]
+          source_lines[0]  = source_lines[0][code_location[1]..]
+          source_lines.map(&:strip).join("\n")
+        else
+          node = RubyVM::AbstractSyntaxTree.of(value)
+          return value if node.nil?
+
+          path = value.source_location.first
+          lines = File.readlines(path)
+          source_lines = lines[(node.first_lineno - 1)..(node.last_lineno - 1)]
+          source_lines[-1] = source_lines[-1][0..(node.last_column - 1)]
+          source_lines[0]  = source_lines[0][node.first_column..]
+          source_lines.map(&:strip).join("\n")
+        end
       end
     end
   end
