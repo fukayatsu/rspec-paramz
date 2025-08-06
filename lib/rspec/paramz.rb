@@ -1,53 +1,31 @@
 require "rspec/paramz/version"
-require "rspec/paramz/syntax"
-require "rspec/paramz/named_proc"
-require "rspec/paramz/pretty_print"
-
 module RSpec
   module Paramz
     module ExampleGroupMethods
       def paramz(*args, &block)
-        labels = args.first
-
-        if !block_given? && labels.none? {|label| subject_label?(label) }
+        unless block_given?
           raise ArgumentError, "No block or subject given to paramz."
         end
 
-        args[1..].each_slice(labels.length).with_index do |arg, index|
-          pairs = [labels, arg].transpose.to_h
-
-          context_name = "[" + pairs.map {|k, v|
-            "#{RSpec::Paramz::PrettyPrint.inspect(k)} = #{RSpec::Paramz::PrettyPrint.inspect(v, false)}"
-          }.join(" | ") + "]"
+        labels = args.first
+        labels = labels.call if labels.respond_to?(:call)
+        args[1..].each do |arg|
+          location = arg.source_location
+          source = File.read(location.first).each_line.to_a[location[1] - 1].strip.delete_suffix(",")
+          context_name = source
 
           context context_name do
-            pairs.each do |label, val|
-              if subject_label?(label)
-                if label == :subject
-                  module_exec { val.is_a?(Proc) ? let(:_paramz_subject, &val) : let(:_paramz_subject) { val } }
-                  it { should == _paramz_subject }
-                  next
-                end
-
-                _subject, _subject_name = parse_subject(label)
-
-                module_exec { _subject.is_a?(Proc) ? subject(_subject_name, &_subject) : subject(_subject_name) { _subject } }
-
-                unless block_given?
-                  module_exec { val.is_a?(Proc) ? let(:_paramz_subject, &val) : let(:_paramz_subject) { val } }
-                  it { should == _paramz_subject }
-                end
-              else
-                module_exec { val.is_a?(Proc) ? let(label, &val) : let(label) { val } }
-              end
+            let(:__paramz_values__, &arg)
+            labels.each.with_index do |label, index|
+              let(label) { __paramz_values__[index] }
             end
 
-            module_eval(&block) if block_given?
+            module_exec(&block)
 
             after(:each) do |example|
               if example.exception
-                index_info = arg.map {|v| RSpec::Paramz::PrettyPrint.inspect(v, false) }.join(", ")
-                example.exception.backtrace.push("failed paramz index is:#{index + 1}:[#{index_info}]")
+                location = arg.source_location
+                example.exception.backtrace.push("failed paramz: #{location.first}:#{location.last}")
               end
             end
           end
