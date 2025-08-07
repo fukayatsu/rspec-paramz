@@ -19,7 +19,7 @@ module RSpec
     module ExampleGroupMethods
       def paramz(*args, &block)
         unless block_given?
-          raise ArgumentError, "No block or subject given to paramz."
+          raise ArgumentError, "No block given to paramz."
         end
 
         labels = args.first
