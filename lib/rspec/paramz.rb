@@ -27,12 +27,20 @@ module RSpec
         args[1..].each do |arg|
           location = arg.source_location
           source = spec_file_content(location.first).each_line.to_a[location[1] - 1].strip.delete_suffix(",")
-          context_name = source
+          result = Prism.parse(source)
+          lambda_node = result.value.compact_child_nodes.first.compact_child_nodes.first
+          array_nodes = lambda_node.body.compact_child_nodes.first
+          nodes = array_nodes.elements
 
-          context context_name do
-            result = Prism.parse(source)
-            val = result.value
-            nodes = val.compact_child_nodes.first.compact_child_nodes.first.body.compact_child_nodes.first.elements
+          texts = nodes.map do |node|
+            range = node.location.start_offset...node.location.end_offset
+            source.byteslice(range)
+          end
+
+          context_name =
+            "[#{[labels, texts].transpose.map {|label, text| "#{label} = #{text}" }.join(" | ")}]"
+
+          context(context_name) do
             nodes.each.with_index do |node, index|
               let(labels[index]) do
                 if node.type == :true_node
