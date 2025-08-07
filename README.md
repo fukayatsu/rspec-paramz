@@ -53,11 +53,13 @@ end
 # RSpec::Paramz
 #   #paramz
 #     additions
-#       -> { [one, two,  three  ] }
+#       [a = one | b = two | answer = three]
 #         do additions
-#       -> { [3,   8,    11     ] }
+#       [a = 3 | b = 8 | answer = 11]
 #         do additions
-#       -> { [5,   -8,   -3     ] }
+#       [a = 5 | b = -8 | answer = -3]
+#         do additions
+#       [a = "a" | b = "b" | answer = "ab"]
 #         do additions
 ```
 
