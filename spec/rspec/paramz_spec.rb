@@ -31,6 +31,7 @@ RSpec.describe RSpec::Paramz do
         -> { [%w[qux],       ["qux"]       ] },
         -> { [nil,           nil           ] },
         -> { [[1],           [1]           ] },
+        -> { [[true],        [true]        ] },
         -> { [{ foo: :bar }, { foo: :bar } ] },
         -> { [data.foo,      :bar          ] },
       ) do
@@ -63,6 +64,22 @@ RSpec.describe RSpec::Paramz do
       ) do
         it "returns the correct string representation" do
           expect(before.to_s).to eq after
+        end
+      end
+    end
+
+    describe "emoji" do
+      paramz(
+        -> { [:path1, :path2, :path3, :bool1, :path4, :bool2] },
+        -> { [ "/foo/👍/", "/foo/👍/", "/foo/bar/👍/", true, "/foo/bar/👍/", [false] ] },
+      ) do
+        it "handles emoji paths and booleans" do
+          expect(path1).to eq "/foo/👍/"
+          expect(path2).to eq "/foo/👍/"
+          expect(path3).to eq "/foo/bar/👍/"
+          expect(bool1).to be true
+          expect(path4).to eq "/foo/bar/👍/"
+          expect(bool2).to eq [false]
         end
       end
     end

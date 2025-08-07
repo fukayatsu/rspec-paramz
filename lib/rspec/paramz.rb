@@ -45,6 +45,9 @@ module RSpec
                   node.value.to_sym
                 elsif node.type == :string_node
                   node.unescaped
+                elsif node.type == :array_node
+                  range = node.opening_loc.start_offset...node.closing_loc.end_offset
+                  eval(source.byteslice(range)) # rubocop:disable Security/Eval
                 elsif node.respond_to?(:value)
                   node.value
                 elsif node.respond_to?(:content)
