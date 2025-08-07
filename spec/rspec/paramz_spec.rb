@@ -17,6 +17,28 @@ RSpec.describe RSpec::Paramz do
         end
       end
     end
+
+    describe "true / false" do
+      paramz(
+        -> { [:a,   :b,    :answer] },
+        -> { [true, false, false] },
+      ) do
+        it "does boolean logic" do
+          expect(a & b).to eq answer
+        end
+      end
+    end
+
+    describe "symbol to_s" do
+      paramz(
+        -> { [:before, :after] },
+        -> { [:foo,    "foo" ] },
+      ) do
+        it "returns the correct string representation" do
+          expect(before.to_s).to eq after
+        end
+      end
+    end
   end
 end
 # rubocop:enable Layout/SpaceInsideArrayLiteralBrackets

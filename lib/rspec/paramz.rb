@@ -35,7 +35,11 @@ module RSpec
             nodes = val.compact_child_nodes.first.compact_child_nodes.first.body.compact_child_nodes.first.elements
             nodes.each.with_index do |node, index|
               let(labels[index]) do
-                if node.respond_to?(:value)
+                if node.type == :true_node
+                  true
+                elsif node.type == :false_node
+                  false
+                elsif node.respond_to?(:value)
                   node.value
                 elsif node.respond_to?(:content)
                   node.content
