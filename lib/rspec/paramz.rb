@@ -43,12 +43,12 @@ module RSpec
                   nil
                 elsif node.type == :symbol_node
                   node.value.to_sym
+                elsif node.type == :string_node
+                  node.unescaped
                 elsif node.respond_to?(:value)
                   node.value
                 elsif node.respond_to?(:content)
                   node.content
-                # elsif node.respond_to?(:message)
-                #   eval(node.message)
                 else
                   loc = node.location
                   eval(source[loc.start_character_offset...loc.end_code_units_offset]) # rubocop:disable Security/Eval
