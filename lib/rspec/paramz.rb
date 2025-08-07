@@ -1,4 +1,19 @@
 require "rspec/paramz/version"
+require "prism"
+
+class Lambda < Prism::Visitor
+  attr_reader :calls
+
+  def initialize(calls)
+    @calls = calls
+  end
+
+  def visit_lambda_node(node)
+    super(node)
+    @calls << node.source
+  end
+end
+
 module RSpec
   module Paramz
     module ExampleGroupMethods
@@ -11,13 +26,23 @@ module RSpec
         labels = labels.call if labels.respond_to?(:call)
         args[1..].each do |arg|
           location = arg.source_location
-          source = File.read(location.first).each_line.to_a[location[1] - 1].strip.delete_suffix(",")
+          source = spec_file_content(location.first).each_line.to_a[location[1] - 1].strip.delete_suffix(",")
           context_name = source
 
           context context_name do
-            let(:__paramz_values__, &arg)
-            labels.each.with_index do |label, index|
-              let(label) { __paramz_values__[index] }
+            result = Prism.parse(source)
+            val = result.value
+            nodes = val.compact_child_nodes.first.compact_child_nodes.first.body.compact_child_nodes.first.elements
+            nodes.each.with_index do |node, index|
+              let(labels[index]) do
+                if node.respond_to?(:value)
+                  node.value
+                elsif node.respond_to?(:content)
+                  node.content
+                else
+                  __send__(node.name)
+                end
+              end
             end
 
             module_exec(&block)
@@ -34,22 +59,9 @@ module RSpec
 
       private
 
-        def subject_label?(label)
-          return true if label == :subject
-
-          label.is_a?(Hash) && label.keys == [:subject]
-        end
-
-        def parse_subject(label)
-          _subject = label[:subject]
-
-          _subject_name = nil
-          if _subject.is_a?(Hash)
-            _subject_name = _subject.keys.first
-            _subject      = _subject.values.first
-          end
-
-          [_subject, _subject_name]
+        def spec_file_content(path)
+          @spec_file_content ||= {}
+          @spec_file_content[path] ||= File.read(path)
         end
     end
   end

@@ -2,6 +2,7 @@ PATH
   remote: .
   specs:
     rspec-paramz (2.0.0)
+      prism
       rspec
 
 GEM

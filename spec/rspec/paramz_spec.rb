@@ -10,6 +10,7 @@ RSpec.describe RSpec::Paramz do
         -> { [one, two,  three  ] },
         -> { [3,   8,    11     ] },
         -> { [5,   -8,   -3     ] },
+        -> { ["a", "b",  "ab"   ] },
       ) do
         it "do additions" do
           expect(a + b).to eq answer
