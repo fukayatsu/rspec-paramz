@@ -19,6 +19,7 @@ RSpec.describe RSpec::Paramz do
     end
 
     describe "types" do
+      let(:data) { Data.define(:foo).new(foo: :bar) }
       paramz(
         -> { [:actual,       :expected     ] },
         -> { [true,          true          ] },
@@ -31,6 +32,7 @@ RSpec.describe RSpec::Paramz do
         -> { [nil,           nil           ] },
         -> { [[1],           [1]           ] },
         -> { [{ foo: :bar }, { foo: :bar } ] },
+        -> { [data.foo,      :bar          ] },
       ) do
         it "equals" do
           expect(actual).to eq(expected)
