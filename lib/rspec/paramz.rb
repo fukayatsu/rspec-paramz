@@ -35,8 +35,22 @@ module RSpec
             nodes = val.compact_child_nodes.first.compact_child_nodes.first.body.compact_child_nodes.first.elements
             nodes.each.with_index do |node, index|
               let(labels[index]) do
-                loc = node.location
-                eval(source[loc.start_offset...loc.end_offset]) # rubocop:disable Security/Eval
+                if node.type == :true_node
+                  true
+                elsif node.type == :false_node
+                  false
+                elsif node.type == :nil_node
+                  nil
+                elsif node.respond_to?(:value)
+                  node.value
+                elsif node.respond_to?(:content)
+                  node.content
+                elsif node.respond_to?(:name)
+                  __send__(node.name)
+                else
+                  loc = node.location
+                  eval(source[loc.start_offset...loc.end_offset]) # rubocop:disable Security/Eval
+                end
               end
             end
 
