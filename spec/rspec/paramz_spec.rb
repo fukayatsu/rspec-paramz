@@ -40,6 +40,22 @@ RSpec.describe RSpec::Paramz do
       end
     end
 
+    describe "foo" do
+      let(:foo) { "かきくけこ" }
+      let(:bar) { "さしすせそ" }
+      paramz(
+        -> { [:text1, :text2, :text3, :text4] },
+        -> { [ "あいうえお", foo, nil, bar ] },
+      ) do
+        it "has the correct values" do
+          expect(text1).to eq "あいうえお"
+          expect(text2).to eq "かきくけこ"
+          expect(text3).to be_nil
+          expect(text4).to eq "さしすせそ"
+        end
+      end
+    end
+
     describe "symbol to_s" do
       paramz(
         -> { [:before, :after] },

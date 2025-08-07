@@ -47,11 +47,11 @@ module RSpec
                   node.value
                 elsif node.respond_to?(:content)
                   node.content
-                # elsif node.respond_to?(:name)
-                #   __send__(node.name)
+                # elsif node.respond_to?(:message)
+                #   eval(node.message)
                 else
                   loc = node.location
-                  eval(source[loc.start_offset...loc.end_offset]) # rubocop:disable Security/Eval
+                  eval(source[loc.start_character_offset...loc.end_code_units_offset]) # rubocop:disable Security/Eval
                 end
               end
             end
