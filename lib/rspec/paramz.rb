@@ -39,12 +39,17 @@ module RSpec
                   true
                 elsif node.type == :false_node
                   false
+                elsif node.type == :nil_node
+                  nil
                 elsif node.respond_to?(:value)
                   node.value
                 elsif node.respond_to?(:content)
                   node.content
-                else
+                elsif node.respond_to?(:name)
                   __send__(node.name)
+                else
+                  loc = node.location
+                  eval(source[loc.start_offset...loc.end_offset]) # rubocop:disable Security/Eval
                 end
               end
             end

@@ -18,13 +18,22 @@ RSpec.describe RSpec::Paramz do
       end
     end
 
-    describe "true / false" do
+    describe "types" do
       paramz(
-        -> { [:a,   :b,    :answer] },
-        -> { [true, false, false] },
+        -> { [:actual,       :expected     ] },
+        -> { [true,          true          ] },
+        -> { [false,         false         ] },
+        -> { [:foo,          :foo          ] },
+        -> { ["bar",         "bar"         ] },
+        -> { [%(bar),        "bar"         ] },
+        -> { [%i[baz],       [:baz]        ] },
+        -> { [%w[qux],       ["qux"]       ] },
+        -> { [nil,           nil           ] },
+        -> { [[1],           [1]           ] },
+        -> { [{ foo: :bar }, { foo: :bar } ] },
       ) do
-        it "does boolean logic" do
-          expect(a & b).to eq answer
+        it "equals" do
+          expect(actual).to eq(expected)
         end
       end
     end
