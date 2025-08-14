@@ -1,19 +1,6 @@
 require "rspec/paramz/version"
 require "prism"
 
-class Lambda < Prism::Visitor
-  attr_reader :calls
-
-  def initialize(calls)
-    @calls = calls
-  end
-
-  def visit_lambda_node(node)
-    super(node)
-    @calls << node.source
-  end
-end
-
 module RSpec
   module Paramz
     module ExampleGroupMethods
